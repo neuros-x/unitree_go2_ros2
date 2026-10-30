@@ -10,8 +10,10 @@ from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
     IncludeLaunchDescription,
+    RegisterEventHandler,
     TimerAction,
 )
+from launch.event_handlers import OnProcessExit
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, LaunchConfiguration, PythonExpression
@@ -202,6 +204,8 @@ def generate_launch_description():
             '--roll', '0', '--pitch', '0', '--yaw', '0',
             '--frame-id', 'map', '--child-frame-id', 'odom'
         ],
+        # SLAM and AMCL publish map -> odom themselves; two publishers fight.
+        condition=IfCondition(LaunchConfiguration("publish_map_odom_tf")),
     )
 
     rviz2 = Node(
@@ -365,6 +369,9 @@ def generate_launch_description():
             declare_disable_d455,
             declare_disable_lidar_l1,
             declare_disable_velodyne_lidar,
+            DeclareLaunchArgument(
+                "publish_map_odom_tf", default_value="true",
+                description="Publish an identity map -> odom TF (false when SLAM or AMCL runs)"),
 
             # Parameters
             SetParameter(name="use_sim_time", value=use_sim_time),
@@ -373,11 +380,18 @@ def generate_launch_description():
             gz_sim,
             robot_state_publisher_node,
             gazebo_spawn_robot,
-            gazebo_bridge,
-            camera_bridge,
-            d455_bridge,
-            lidar_l1_bridge,
-            velodyne_bridge,
+            # The bridges start once the spawner has exited, i.e. once the
+            # server is up and the robot exists. Started together with the
+            # server, the bridge's gz subscription races the server's
+            # advertisement of /clock (it is advertised during startup) and
+            # loses it for good: no ROS /clock, so controller_manager and the
+            # CHAMP nodes never tick and the robot lies still while the
+            # sensors keep publishing. This was the "Go2 deadlocks Gazebo".
+            RegisterEventHandler(OnProcessExit(
+                target_action=gazebo_spawn_robot,
+                on_exit=[gazebo_bridge, camera_bridge, d455_bridge,
+                         lidar_l1_bridge, velodyne_bridge],
+            )),
             
             # CHAMP controller nodes
             quadruped_controller_node,
