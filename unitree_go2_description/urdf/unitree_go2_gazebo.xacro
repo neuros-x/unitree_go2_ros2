@@ -123,7 +123,7 @@
                 <pose>0 0.0 0 0 0 0</pose>
                 <camera>
                     <horizontal_fov>1.367</horizontal_fov>
-                    <!-- 320x240 @ 5 Hz, 30 m far clip: the multi-robot budget
+                    <!-- 320x240 @ 5 Hz, 30 m far clip, the multi-robot budget
                          (the fork's perf tuning, kept through the upstream merge) -->
                     <image>
                         <width>320</width>

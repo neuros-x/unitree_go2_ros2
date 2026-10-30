@@ -3,6 +3,7 @@ import os
 import launch_ros
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.actions import Node, SetParameter
+from launch_ros.parameter_descriptions import ParameterValue
 
 from launch import LaunchDescription
 from launch.actions import (
@@ -13,7 +14,7 @@ from launch.actions import (
 )
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import Command, LaunchConfiguration, PythonExpression
 
 
 def generate_launch_description():
@@ -78,8 +79,16 @@ def generate_launch_description():
     declare_disable_camera = DeclareLaunchArgument(
         "disable_camera", default_value="false", description="Leave out the mono camera"
     )
+    # The D455 macro comes from realsense2_description. Default to leaving the
+    # camera out when that package is absent, instead of failing in xacro.
+    try:
+        get_package_share_directory("realsense2_description")
+        d455_default = "false"
+    except Exception:
+        d455_default = "true"
     declare_disable_d455 = DeclareLaunchArgument(
-        "disable_d455", default_value="false", description="Leave out the RealSense D455"
+        "disable_d455", default_value=d455_default,
+        description="Leave out the RealSense D455 (default: true if realsense2_description is missing)"
     )
     declare_disable_lidar_l1 = DeclareLaunchArgument(
         "disable_lidar_l1", default_value="false", description="Leave out the 4D Lidar L1"
@@ -89,7 +98,9 @@ def generate_launch_description():
     )
 
     # Description nodes and parameters
-    description_command = Command([
+    # ParameterValue(str): without it launch parses the URDF as YAML, and any
+    # comment containing ": " in a xacro turns the whole description into an error.
+    description_command = ParameterValue(Command([
         "xacro ", LaunchConfiguration("unitree_go2_description_path"),
         " robot_controllers:=", LaunchConfiguration("ros_control_file"),
         " command_interface:=", LaunchConfiguration("command_interface"),
@@ -97,7 +108,7 @@ def generate_launch_description():
         " disable_d455:=", LaunchConfiguration("disable_d455"),
         " disable_lidar_l1:=", LaunchConfiguration("disable_lidar_l1"),
         " disable_velodyne_lidar:=", LaunchConfiguration("disable_velodyne_lidar"),
-    ])
+    ]), value_type=str)
     robot_description = {"robot_description": description_command}
 
     robot_state_publisher_node = Node(
@@ -208,7 +219,11 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
         launch_arguments={
-            'gz_args': [LaunchConfiguration('world'), ' -r']  # Add -r flag to start unpaused
+            # -r starts unpaused. gui:=false runs the server alone (-s) with
+            # EGL rendering, so the GPU lidar and cameras still produce data.
+            'gz_args': [LaunchConfiguration('world'), ' -r',
+                        PythonExpression(["'' if '", LaunchConfiguration('gui'),
+                                          "' == 'true' else ' -s --headless-rendering'"])]
         }.items(),
     )
     
