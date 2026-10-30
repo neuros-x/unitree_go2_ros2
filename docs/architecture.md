@@ -70,6 +70,16 @@ A second trap: signalling only the `ros2 launch` process (`kill <pid>`) stops
 terminal signals the whole process group and is fine. Two servers in one
 `GZ_PARTITION` publish interleaved clocks. Check `pgrep -af "gz sim"` between runs.
 
+## Namespaces (NEUROS-X)
+
+Under a namespace (`/go2_0` in NEUROS-X) the description must be built with
+`ros_namespace:=go2_0`. gz_ros2_control then starts `/go2_0/controller_manager`
+and reads `/go2_0/robot_description`. Without it, the manager sits at the root
+and waits for a root `/robot_description`. The wait happens inside the plugin's
+Configure, which holds the Gazebo server, so the whole simulation freezes.
+CHAMP's command topic is the relative `cmd_vel/smooth`, so remap rules must be
+relative too.
+
 ## Measuring
 
 - `tools/go2_sim_check.py`: per-topic rates, real-time factor, and ground-truth
