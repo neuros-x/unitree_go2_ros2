@@ -1,9 +1,16 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:macro name="unitree_go2_gazebo" params="robot_controllers">
+<xacro:macro name="unitree_go2_gazebo" params="robot_controllers ros_namespace:=''">
   <!-- ROS2 Control plugin -->
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <!-- With a namespace, controller_manager, robot_description and
+           robot_state_publisher are all looked up under it. Without one, a
+           namespaced robot_state_publisher is never found and the plugin
+           blocks the Gazebo server while it waits. -->
+      <xacro:if value="${ros_namespace != ''}">
+        <ros><namespace>${ros_namespace}</namespace></ros>
+      </xacro:if>
       <parameters>${robot_controllers}</parameters>
       <robot_param_node>robot_state_publisher</robot_param_node>
     </plugin>
