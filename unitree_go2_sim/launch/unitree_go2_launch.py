@@ -253,7 +253,6 @@ def generate_launch_description():
         name='gazebo_bridge',
         output='screen',
         arguments=[
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU',
             '/gps/fix@sensor_msgs/msg/NavSatFix[gz.msgs.NavSat',
             '/odom/ground_truth@nav_msgs/msg/Odometry[gz.msgs.Odometry',
@@ -380,6 +379,11 @@ def generate_launch_description():
             gz_sim,
             robot_state_publisher_node,
             gazebo_spawn_robot,
+            # ROS /clock comes from a relay that re-subscribes when gz /clock
+            # goes silent, not from the bridge: a lost discovery round left
+            # the bridge without a clock for good (see the script's docstring).
+            Node(package='unitree_go2_sim', executable='gz_clock_relay.py',
+                 name='gz_clock_relay', output='screen'),
             # The bridges start once the spawner has exited, i.e. once the
             # server is up and the robot exists. Started together with the
             # server, the bridge's gz subscription races the server's

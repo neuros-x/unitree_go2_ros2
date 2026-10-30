@@ -37,16 +37,20 @@ TOPICS = {
 
 
 class Check(Node):
-    def __init__(self, ns):
+    def __init__(self, ns, gt_topic):
         super().__init__('go2_sim_check')
         self.ns = ns.rstrip('/')
+        self.gt_topic = gt_topic
         self.counts = {t: 0 for t in TOPICS}
         self.first = {}
         self.last_clock = None
         self.first_clock = None
         self.pose = None
         for topic, typ in TOPICS.items():
-            self.create_subscription(typ, self.ns + topic,
+            name = '/clock' if topic == '/clock' else self.ns + topic   # /clock is global
+            if topic == '/odom/ground_truth':
+                name = self.ns + gt_topic
+            self.create_subscription(typ, name,
                                      lambda m, t=topic: self._on(t, m),
                                      qos_profile_sensor_data)
         self.cmd = self.create_publisher(Twist, self.ns + '/cmd_vel', 10)
@@ -72,7 +76,9 @@ def spin_for(node, seconds):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--ns', default='')
+    ap.add_argument('--ns', default='', help="robot namespace, e.g. /go2_0 (neuros_sim)")
+    ap.add_argument('--gt-topic', default='/odom/ground_truth',
+                    help="Gazebo ground-truth odometry under --ns (neuros_sim bridges it to /odom)")
     ap.add_argument('--listen', type=float, default=10.0)
     ap.add_argument('--walk-speed', type=float, default=0.3)
     ap.add_argument('--walk-time', type=float, default=10.0)
@@ -84,7 +90,7 @@ def main():
     a = ap.parse_args()
 
     rclpy.init()
-    node = Check(a.ns)
+    node = Check(a.ns, a.gt_topic)
     spin_for(node, 2.0)                       # discovery
     node.counts = {t: 0 for t in TOPICS}
     node.first_clock = None
