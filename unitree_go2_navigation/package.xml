@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>unitree_go2_navigation</name>
+  <version>0.1.0</version>
+  <description>SLAM (slam_toolbox), localization (AMCL) and Nav2 (MPPI) for the simulated Unitree Go2, with a Velodyne-to-scan pipeline and a body self-filter.</description>
+  <maintainer email="asmalbatati@hotmail.com">Abdulrahman Al-Batati</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>unitree_go2_sim</exec_depend>
+  <exec_depend>unitree_go2_description</exec_depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+  <exec_depend>laser_filters</exec_depend>
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_mppi_controller</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
