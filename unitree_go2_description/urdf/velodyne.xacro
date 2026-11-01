@@ -52,9 +52,9 @@
         <!-- Gazebo Sim Velodyne Sensor plugin -->
         <gazebo reference="velodyne">
             <sensor name="velodyne-VLP16" type="gpu_lidar">
-                <topic>velodyne_points</topic>
+                <topic>${gz_ns}velodyne_points</topic>
                 <update_rate>10</update_rate>
-                <gz_frame_id>velodyne</gz_frame_id>
+                <gz_frame_id>${frame_ns}velodyne</gz_frame_id>
                 <lidar>
                     <scan>
                         <horizontal>
@@ -80,7 +80,7 @@
                         <mean>0.0</mean>
                         <stddev>0.008</stddev>
                     </noise>
-                    <frame_id>velodyne</frame_id>
+                    <frame_id>${frame_ns}velodyne</frame_id>
                 </lidar>
                 <visualize>false</visualize>
 

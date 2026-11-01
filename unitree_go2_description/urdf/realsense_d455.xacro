@@ -30,8 +30,8 @@
                 <always_on>1</always_on>
                 <update_rate>15</update_rate>
                 <visualize>false</visualize>
-                <topic>d455</topic>
-                <gz_frame_id>d455_camera_link</gz_frame_id>
+                <topic>${gz_ns}d455</topic>
+                <gz_frame_id>${frame_ns}d455_camera_link</gz_frame_id>
             </sensor>
         </gazebo>
 

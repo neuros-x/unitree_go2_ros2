@@ -23,7 +23,7 @@
                 <odom_frame>odom</odom_frame>
                 <dimensions>3</dimensions>
                 <robot_base_frame>base_link</robot_base_frame>
-                <odom_topic>/odom/ground_truth</odom_topic>
+                <odom_topic>${gz_ns}odom/ground_truth</odom_topic>
                 <odom_publish_frequency>50</odom_publish_frequency>
             </plugin>
         </gazebo>
@@ -34,8 +34,8 @@
                 <always_on>true</always_on>
                 <update_rate>100</update_rate>
                 <visualize>false</visualize>
-                <topic>imu/data</topic>
-                <gz_frame_id>imu_link</gz_frame_id>
+                <topic>${gz_ns}imu/data</topic>
+                <gz_frame_id>${frame_ns}imu_link</gz_frame_id>
                 <imu>
                     <angular_velocity>
                         <x>
@@ -91,8 +91,8 @@
             <sensor name="navsat_sensor" type="navsat">
                 <always_on>true</always_on>
                 <update_rate>10</update_rate>
-                <topic>gps/fix</topic>
-                <gz_frame_id>gps_link</gz_frame_id>
+                <topic>${gz_ns}gps/fix</topic>
+                <gz_frame_id>${frame_ns}gps_link</gz_frame_id>
                 <navsat>
                     <position_sensing>
                         <horizontal>
@@ -143,11 +143,11 @@
                         <far>30</far>
                     </clip>
                 </camera>
-                <gz_frame_id>camera_link</gz_frame_id>
+                <gz_frame_id>${frame_ns}camera_link</gz_frame_id>
                 <always_on>1</always_on>
                 <update_rate>5</update_rate>
                 <visualize>false</visualize>
-                <topic>rgb_image</topic>
+                <topic>${gz_ns}rgb_image</topic>
             </sensor>
         </gazebo>
 
@@ -186,7 +186,7 @@
                 <update_rate>100.0</update_rate>
                 <contact>
                     <collision>lf_foot_link_collision</collision>
-                    <topic>/lf_foot_contacts</topic>
+                    <topic>${gz_ns}lf_foot_contacts</topic>
                 </contact>
             </sensor>
         </gazebo>
@@ -223,7 +223,7 @@
                 <update_rate>100.0</update_rate>
                 <contact>
                     <collision>rf_foot_link_collision</collision>
-                    <topic>/rf_foot_contacts</topic>
+                    <topic>${gz_ns}rf_foot_contacts</topic>
                 </contact>
             </sensor>
         </gazebo>
@@ -260,7 +260,7 @@
                 <update_rate>100.0</update_rate>
                 <contact>
                     <collision>lh_foot_link_collision</collision>
-                    <topic>/lh_foot_contacts</topic>
+                    <topic>${gz_ns}lh_foot_contacts</topic>
                 </contact>
             </sensor>
         </gazebo>
@@ -297,7 +297,7 @@
                 <update_rate>100.0</update_rate>
                 <contact>
                     <collision>rh_foot_link_collision</collision>
-                    <topic>/rh_foot_contacts</topic>
+                    <topic>${gz_ns}rh_foot_contacts</topic>
                 </contact>
             </sensor>
         </gazebo>

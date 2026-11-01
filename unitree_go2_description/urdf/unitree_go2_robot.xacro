@@ -9,6 +9,12 @@
     <xacro:arg name="command_interface" default="effort"/>
     <!-- ROS namespace for gz_ros2_control (empty: root, as in unitree_go2_launch.py) -->
     <xacro:arg name="ros_namespace" default=""/>
+    <!-- Per-robot gz topics and sensor frames, so several Go2s can share a world:
+         with ros_namespace go2_1 the IMU publishes on gz /go2_1/imu/data in frame
+         go2_1/imu_link. Empty namespace: /imu/data and imu_link, as before. -->
+    <xacro:property name="ns_arg" value="$(arg ros_namespace)"/>
+    <xacro:property name="gz_ns" value="${'/' + ns_arg + '/' if ns_arg else '/'}"/>
+    <xacro:property name="frame_ns" value="${ns_arg + '/' if ns_arg else ''}"/>
     <!-- Optional sensors, all mounted by default -->
     <xacro:arg name="disable_camera" default="false"/>
     <xacro:arg name="disable_d455" default="false"/>
