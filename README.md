@@ -259,7 +259,7 @@ The sensor models standard u-blox-level accuracy:
 
 | Axis | Noise (std dev) | Equivalent variance |
 |------|----------------|---------------------|
-| Horizontal (lat/lon) | 0.5 m | 0.25 m² |
+| Horizontal (lat/lon) | 0.5 m (written as 4.5e-6: gz-sensors takes this one in degrees) | 0.25 m² |
 | Vertical (altitude) | 0.8 m | 0.64 m² |
 
 **Verify it is working:**
@@ -311,6 +311,7 @@ The gait configuration for the robot is found in `unitree_go2_sim/config/gait/ga
 - `unitree_go2_sim/`: Simulation launch files and configuration
 - `unitree_go2_navigation/`: scan pipeline, self-filter, SLAM, AMCL and Nav2 launch/config, saved maps
 - `unitree_application/`: Gazebo foot-contact to `champ_msgs` bridge
+- `tools/go2_fleet_check.py`: walks each of several Go2s in turn and checks the others stay put
 - `tools/go2_sim_check.py`: measures a running simulation
 
 ## Contributing

@@ -74,14 +74,23 @@ terminal signals the whole process group and is fine. Two servers in one
 
 Under a namespace (`/go2_0` in NEUROS-X) the description must be built with
 `ros_namespace:=go2_0`. gz_ros2_control then starts `/go2_0/controller_manager`
-and reads `/go2_0/robot_description`. Without it, the manager sits at the root
-and waits for a root `/robot_description`. The wait happens inside the plugin's
-Configure, which holds the Gazebo server, so the whole simulation freezes.
-CHAMP's command topic is the relative `cmd_vel/smooth`, so remap rules must be
-relative too.
+and reads `/go2_0/robot_description`. The same argument prefixes every gz topic
+and sensor frame: gz `/go2_0/imu/data` in frame `go2_0/imu_link`, matching the
+prefixed TF tree. That is what lets several Go2s share a world. An empty namespace
+keeps `/imu/data` and `imu_link`.
+
+Without the argument the manager sits at the root and waits for a root
+`/robot_description`. The wait happens inside the plugin's Configure, which holds
+the Gazebo server, so the whole simulation freezes. CHAMP's command topic is the
+relative `cmd_vel/smooth`, so remap rules must be relative too.
+
+In a fleet, `/clock` has one publisher: `gazebo_sim.launch.py` runs one relay and
+tells each platform launch not to publish its own. Each Go2 keeps its own CHAMP,
+EKFs and controllers under its namespace.
 
 ## Measuring
 
+- `tools/go2_fleet_check.py`: several Go2s, each walking in turn; crossed topics show up as the wrong robot moving.
 - `tools/go2_sim_check.py`: per-topic rates, real-time factor, and ground-truth
   distance walked for a `/cmd_vel` command (`--ns /go2_0 --gt-topic /odom` for
   the NEUROS-X launch).

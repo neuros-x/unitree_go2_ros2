@@ -28,7 +28,7 @@ SCAN_SOURCE = {
     'max_obstacle_height': 2.0, 'raytrace_max_range': 10.0, 'raytrace_min_range': 0.0,
     'obstacle_max_range': 8.0, 'obstacle_min_range': 0.0,
 }
-INFLATION = {'plugin': 'nav2_costmap_2d::InflationLayer', 'cost_scaling_factor': 3.0,
+INFLATION = {'plugin': 'nav2_costmap_2d::InflationLayer', 'cost_scaling_factor': 10.0,
              'inflation_radius': 0.6}
 
 
