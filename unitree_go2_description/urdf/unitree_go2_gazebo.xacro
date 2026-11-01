@@ -84,7 +84,9 @@
             </sensor>
         </gazebo>
 
-        <!-- GPS / NavSat plugin — simulates u-blox standard GPS (~0.5 m horizontal noise) -->
+        <!-- GPS / NavSat plugin: simulates u-blox standard GPS (~0.5 m horizontal noise).
+             gz-sensors adds the horizontal stddev to latitude and longitude in DEGREES
+             (vertical is in metres), so 0.5 m is written as 0.5 / 111320 = 4.5e-6. -->
         <gazebo reference="gps_link">
             <sensor name="navsat_sensor" type="navsat">
                 <always_on>true</always_on>
@@ -96,7 +98,7 @@
                         <horizontal>
                             <noise type="gaussian">
                                 <mean>0.0</mean>
-                                <stddev>0.5</stddev>
+                                <stddev>4.5e-6</stddev>
                             </noise>
                         </horizontal>
                         <vertical>
