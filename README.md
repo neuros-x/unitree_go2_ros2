@@ -140,7 +140,24 @@ Both use the physics (bullet-featherstone, 1 ms) and system plugins of
 
 ### SLAM and navigation
 
-`unitree_go2_navigation` adds the 2D navigation stack:
+`unitree_go2_navigation` adds the 2D navigation stack. For a Go2 under its own
+namespace, as NEUROS-X runs it (`/go2_0`, prefixed TF frames), use
+`go2_nav_ns.launch.py`:
+
+```bash
+ros2 launch neuros_sim gazebo_sim.launch.py world:=go2_indoor 'robot:={go2,1}' localization:=amcl
+ros2 launch unitree_go2_navigation go2_nav_ns.launch.py namespace:=go2_0   # x/y/yaw: AMCL start
+```
+
+It runs the scan pipeline, map server, AMCL and Nav2 in `/<ns>`. It rewrites every
+frame (`<ns>/base_footprint`, `<ns>/odom`) and topic in `config/nav2_params.yaml`
+into `~/.cache/neuros/nav2/<ns>.yaml`. Nav2 gets the EKF's `<ns>/odom/filtered`;
+`<ns>/odom` is Gazebo ground truth. AMCL's translation noise is widened (`alpha3`
+0.5, `alpha4` 0.3): CHAMP's leg odometry read 0.91 m for 1.25 m walked, and with
+the stock noise AMCL lost the robot crossing the building.
+`maps/go2_indoor_places.yaml` names the doorways and rooms, for the NEUROS-X agent.
+
+The root-namespace stack:
 
 ```bash
 # Go2 in the indoor world + slam_toolbox + Nav2, headless

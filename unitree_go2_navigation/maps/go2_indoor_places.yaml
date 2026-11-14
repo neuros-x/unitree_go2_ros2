@@ -1,0 +1,12 @@
+# Named places in go2_indoor, in the map frame (which is the world frame), for
+# commands such as "go to the east doorway". Read by the NEUROS-X agent
+# (places_file); coordinates are free floor, clear of the furniture in
+# unitree_go2_description/worlds/generate_worlds.py.
+hall: {x: 0.5, y: 0.0, description: the central hall}
+east_doorway: {x: 4.0, y: 0.0, description: doorway from the hall to the east rooms}
+north_east_room: {x: 7.2, y: 3.0, description: the room with desks}
+north_east_doorway: {x: 7.1, y: 1.5, description: doorway between the two east rooms}
+south_east_room: {x: 8.5, y: -2.5, description: the storage room with racks}
+west_doorway_north: {x: -3.0, y: 2.1, description: north doorway from the hall to the west room}
+west_doorway_south: {x: -3.0, y: -3.9, description: south doorway from the hall to the west room}
+west_room: {x: -6.5, y: 1.0, description: the room with a table and a sofa}
