@@ -78,6 +78,9 @@ def _setup(context):
     else:
         nav2.pop('amcl', None)
     nav2.pop('docking_server', None)
+    # cmd_vel_out:=cmd_vel_nominal hands Nav2's output to SAFEMRS's runtime filter.
+    nav2['collision_monitor']['ros__parameters']['cmd_vel_out_topic'] = \
+        LaunchConfiguration('cmd_vel_out').perform(context)
     nav2.pop('route_server', None)
     nodes = {**namespaced(nav2, ns), **namespaced(perception, ns),
              'map_server': {'ros__parameters': {'yaml_filename': nav_map}}}
@@ -127,6 +130,9 @@ def generate_launch_description():
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         DeclareLaunchArgument('localization', default_value='amcl',
                               description="'amcl' on the saved map, or 'odom' (no AMCL)"),
+        DeclareLaunchArgument('cmd_vel_out', default_value='cmd_vel',
+                              description="Nav2's output topic in /<ns>; cmd_vel_nominal "
+                                          "for SAFEMRS's runtime filter"),
         DeclareLaunchArgument('x', default_value='0.0', description='AMCL initial pose'),
         DeclareLaunchArgument('y', default_value='0.0'),
         DeclareLaunchArgument('yaw', default_value='0.0'),
