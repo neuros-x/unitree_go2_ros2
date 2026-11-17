@@ -82,6 +82,16 @@ def _setup(context):
     nav2['collision_monitor']['ros__parameters']['cmd_vel_out_topic'] = \
         LaunchConfiguration('cmd_vel_out').perform(context)
     nav2.pop('route_server', None)
+    if LaunchConfiguration('keepout_zones').perform(context) == 'true':
+        # SAFEMRS keep-out zones as a Nav2 keepout mask (safemrs keepout_mask_node
+        # publishes /<ns>/keepout_filter_info), so the planner goes round them and
+        # the runtime filter is only the backstop. Without the mask Nav2 kept steering
+        # into a zone the filter refused: 141 s for a 24 s trip, 175 corrections.
+        for sub in ('global_costmap', 'local_costmap'):
+            cm = nav2[sub][sub]['ros__parameters']
+            cm['filters'] = list(cm.get('filters', [])) + ['keepout_filter']
+            cm['keepout_filter'] = {'plugin': 'nav2_costmap_2d::KeepoutFilter', 'enabled': True,
+                                    'filter_info_topic': '/keepout_filter_info'}
     nodes = {**namespaced(nav2, ns), **namespaced(perception, ns),
              'map_server': {'ros__parameters': {'yaml_filename': nav_map}}}
     for p in nodes.values():
@@ -133,6 +143,9 @@ def generate_launch_description():
         DeclareLaunchArgument('cmd_vel_out', default_value='cmd_vel',
                               description="Nav2's output topic in /<ns>; cmd_vel_nominal "
                                           "for SAFEMRS's runtime filter"),
+        DeclareLaunchArgument('keepout_zones', default_value='false',
+                              description="'true': SAFEMRS keep-out zones in both costmaps "
+                                          "(run safemrs keepout_mask_node)"),
         DeclareLaunchArgument('x', default_value='0.0', description='AMCL initial pose'),
         DeclareLaunchArgument('y', default_value='0.0'),
         DeclareLaunchArgument('yaw', default_value='0.0'),
